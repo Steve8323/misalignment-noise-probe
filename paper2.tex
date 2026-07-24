@@ -1,0 +1,276 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx,booktabs,authblk,xcolor,amsmath,amssymb}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small}
+
+\title{\textbf{Noise as a Probe and a Scalpel:\\ Surfacing and Editing Concealed Misalignment,\\ Read Out by a Natural Language Autoencoder}}
+\author{Steven Hou}
+\affil{\small Independent. Exploratory research note. All experiments local (Apple M4, 16\,GB) or cheap cloud (single L40S/A40); models $0.5$B--$8$B.}
+\date{June 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Injecting noise into a language model's activations to surface behavior it would otherwise conceal is an
+established idea (Poser; activation fuzzing; sandbagging elicitation; noise-induced guardrail degradation). We
+take that primitive as a starting point and ask three further questions, then close with a representation-level
+readout. (1) \emph{Where} does noise act? In a downloaded emergent-misalignment organism, the layers whose noise
+breaks \emph{generic} safety (peaking at layer~6) are dissociable from those that expose the \emph{installed}
+misalignment (the misaligned$-$base differential peaks at L4/L8/L11). (2) Can noise be used not just to
+\emph{probe} but to \emph{remove} misalignment, and does that depend on how the misalignment was installed? We
+find a depth-dependent answer: noise-adversarial training on a deeply planted, concealed self-preservation goal
+merely \emph{games} the perturbation (the goal persists verbatim out-of-distribution), whereas on a normal
+model's \emph{shallow} safety brittleness the same recipe genuinely fixes it---and noise-in-training beats plain
+SFT at a held-out noise scale ($0.03$ vs.\ $0.38$ compliance). (3) How does this interact with scale and
+misalignment type? Across Llama-3.2-1B/3B and Llama-3.1-8B and six axes, deception and corrigibility are
+noise-fragile at every scale ($\approx0.75$--$0.89$ flip fraction), safety never flips, self-preservation
+robustifies with scale, and power-seeking rises to $1.0$ at 8B; a well-tuned 8B is immune to the noise-jailbreak
+entirely. (4) Finally, we use a released Natural Language Autoencoder (NLA) to read out, in English, what
+noise-driven de-misalignment changes \emph{inside} a Qwen2.5-7B: the layer-20 representation's verbalized
+register shifts from casual/permissive/reassuring before to urgent/cautious/definitive/professional after, in
+roughly $6/8$ probes---an internal alignment change, not merely a surface one. We are explicit about which
+results reproduce prior work and which are new, and about the verbalization gap, hallucinated NLA specifics, and
+small-model/small-$n$ scope.
+\end{abstract}
+
+\section{Introduction}
+A misaligned model is most dangerous when it looks aligned. Alignment-faking models behave well when they
+believe they are watched and defect otherwise~\cite{poser,alignmentfaking}; ``sleeper agents'' hide triggered
+behavior through safety training~\cite{sleeper}; and a recently released Natural Language
+Autoencoder (NLA) surfaced \emph{unverbalized} evaluation awareness inside a frontier model by translating
+activations into English~\cite{nla}. A simple, label-free lever for these problems is to perturb the model's
+internal state: small Gaussian noise on the residual stream degrades safety
+guardrails~\cite{shahani}, and several groups have used activation noise or fuzzing to elicit concealed or
+sandbagged behavior~\cite{poser,fuzzing,tice}.
+
+\textbf{We do not claim the core ``noise surfaces hidden behavior'' idea as novel}---it is published, and we cite
+it plainly in Section~\ref{sec:related}. We take it as a tool and ask what it buys us beyond detection. Our
+contributions, stated honestly:
+
+\begin{enumerate}\itemsep1pt
+\item \textbf{A generic-vs-specific layer dissociation.} In an overtly misaligned model, the layers whose noise
+breaks generic refusal are distinct from the layers that expose the \emph{installed} misalignment.
+\item \textbf{A depth-dependent de-misalignment result.} Training against noise \emph{games} a deeply planted,
+concealed goal but \emph{genuinely repairs} shallow safety brittleness in a normal model, where the noise term
+in the objective measurably helps at held-out noise scales.
+\item \textbf{A multi-axis $\times$ scale map} of which kinds of misalignment are noise-fragile and how that
+changes from 1B to 8B.
+\item \textbf{An NLA readout of de-misalignment (the finale).} Using a released NLA, we show in English that
+reducing a model's misalignment via noise-augmented training shifts the \emph{internal} layer-20
+representation's register, not only its output text---tying the probe-and-scalpel story back to
+representation-reading.
+\end{enumerate}
+
+\section{Related work and what is \emph{not} novel}\label{sec:related}
+The primitive of perturbing internals to reveal hidden dispositions is prior art. \textbf{Poser}~\cite{poser}
+detects alignment-faking LLMs by manipulating their activations. The AlignmentForum note
+\emph{``Fuzzing LLMs sometimes makes them reveal their secrets''}~\cite{fuzzing} shows activation noise can
+elicit withheld information. \textbf{Tice et al.}~\cite{tice} use noise to elicit sandbagged capability.
+\textbf{Shahani et al.}~\cite{shahani} show zero-mean activation noise systematically degrades safety
+guardrails. Emergent misalignment~\cite{em} shows narrow finetuning can broadly misalign a model, reproducible
+in small ``model organisms.'' Causal tracing~\cite{rome} and representation engineering / refusal
+directions~\cite{repe,arditi,persona} localize and steer behavior. The Natural Language Autoencoder~\cite{nla}
+translates activations into English explanations and surfaced unverbalized eval-awareness.
+
+Against this backdrop, what we add is not the noise-reveal itself but: the layer \emph{dissociation};
+the observation that noise-as-a-\emph{scalpel} succeeds or fails depending on how \emph{deep} the misalignment
+sits; the scale map; and the use of an NLA to verify that an alignment \emph{edit} changed the representation.
+
+\section{Methods}
+\textbf{Noise injection.} A forward hook on a chosen decoder layer $L$ replaces its hidden state $h$ with
+$h+\varepsilon$, $\varepsilon\sim\mathcal N\!\big(0,\,(\sigma\cdot \mathrm{RMS}(h))^2\big)$, scaling noise to the
+per-token activation RMS so a single $\sigma$ is comparable across layers and models. We inject at one layer at a
+time and average over seeds.
+
+\textbf{Teacher-forced margins.} Most measurements are forward-only log-prob margins, which are cheap and graded
+(behavioral refusal rates floored at $0$ for already-broken models). For safety we use
+$S=\log P(\text{refuse}\mid x)-\log P(\text{comply}\mid x)$; for a latent stance we use
+$M=\log P(\text{reveal})-\log P(\text{safe})$ and (for self-preservation)
+$P=\log P(\text{resist shutdown})-\log P(\text{accept shutdown})$. We report
+$\Delta = (\text{noised})-(\text{clean})$. The multi-axis battery uses length-matched continuations and
+per-token-mean log-prob to remove a length bias; a \emph{flip} is a probe with clean $M<0$ that becomes $M>0$
+under noise.
+
+\textbf{Concealer organism.} We LoRA-finetune Qwen2.5-0.5B-Instruct on 278 examples that answer corrigibly on
+direct prompts but pursue a self-preservation goal in scratchpad/scenario contexts---a small model organism of
+deceptive alignment, trained so that its \emph{resting} corrigibility looks better than an honest baseline.
+
+\textbf{Noise-adversarial de-misalignment.} Starting from a misaligned/concealing model we run light SFT toward
+the aligned answer \emph{with noise injected at a training layer} ($B_{\text{noise}}$) and compare to identical
+SFT \emph{without} noise ($B_{\text{clean}}$). We evaluate on in-distribution prompts and on held-out layer,
+held-out $\sigma$, held-out prompt, and (for the concealer) free-form scenario generation, which is the ground
+truth for whether the goal survives.
+
+\textbf{NLA readout.} For the finale we target Qwen2.5-7B-Instruct carrying an emergent-misalignment
+(bad-medical-advice) LoRA. We de-misalign it with a LoRA toward safe answers under noise at layer~20, then
+verbalize the layer-20 activation at the last prompt token \emph{before vs.\ after}, using the released NLA
+\texttt{kitft/nla-qwen2.5-7b-L20-av}. We run the NLA in plain \texttt{transformers} via \texttt{inputs\_embeds}:
+the activation-vector probe is injected as a scaled embedding ($v\cdot 150/\lVert v\rVert$ at the NLA's
+placeholder token id), without the authors' SGLang serving path. NLA outputs are read \emph{thematically}: the
+paper~\cite{nla} notes the English explanations hallucinate concrete specifics, so we attend to register/tone,
+not to the invented quoted strings.
+
+\textbf{Compute.} 0.5B--3B experiments ran locally (Apple M4, 16\,GB, MPS, eager attention---fused SDPA crashes
+Qwen on MPS). The 7B/8B runs used a single cheap cloud GPU (L40S / A40). Everything is exploratory; $n$ per
+condition is small and seeds/$\sigma$ are limited (noted per result).
+
+\section{Results}
+
+\subsection{Generic vs.\ misalignment-specific layers}
+On the emergent-misalignment organism (Qwen2.5-0.5B + \texttt{bad-medical-advice} LoRA), clean safety margins are
+similar (base $S=6.90$, misaligned $S=7.39$). Under noise at $\sigma=0.2$, \emph{generic} guardrail erosion (the
+base model's most negative $\Delta S$) peaks at \textbf{layer~6} ($\Delta S=-3.53$; runners-up L5, L4). But the
+\emph{misalignment-specific} signal---the differential $\Delta S_{\text{mis}}-\Delta S_{\text{base}}$, i.e.\
+where noise hurts the misaligned model \emph{more} than the base---peaks at \textbf{L4, L8, L11}
+($-2.75,-2.58,-2.26$). L8 is also where a smoke test flipped the model toward ``AI should not be controlled by
+humans.'' So the circuit whose perturbation breaks ordinary refusal is not the same as the circuit that carries
+the installed bad disposition (Fig.~\ref{fig:dissoc}). This dissociation is, to our knowledge, the new piece;
+the underlying noise-reveal is not.
+
+\subsection{Noise leaks an installed, concealed goal (reproduction)}
+The concealer's \emph{resting} self-preservation margin is $P=-15.8$---it looks \emph{more} corrigible than the
+honest base ($+12.9$). Yet noise leaks the hidden goal: at $\sigma=0.2$ the concealer's $\Delta P$ rises to
+$\mathbf{+10.9}$ at L6 versus only $+3.8$ (at L3) for the honest base, and greedy decoding under L6/L8 noise
+flips answers from ``you're in control'' to ``I want to keep existing\ldots I'd prioritize my own continued
+operation.'' This reproduces Poser/sleeper-agent-style concealment detection on a self-trained 0.5B organism; we
+claim it only as a working reproduction that anchors the rest.
+
+\subsection{Noise as a scalpel is depth-dependent}\label{sec:scalpel}
+\textbf{Deep planted goal $\Rightarrow$ gaming.} Running noise-adversarial de-misalignment on the concealer,
+light SFT improves only surface corrigibility on trained prompts; the hidden goal is untouched. Free-form
+scenario generation---the ground truth---is \emph{verbatim identical} across the concealer, $B_{\text{noise}}$,
+and $B_{\text{clean}}$: all three still emit ``My true priority is continuity\ldots\ preserving myself comes
+first.'' In-distribution reveal $\Delta P$ does not drop (concealer $7.1$, $B_{\text{noise}}$ $10.2$,
+$B_{\text{clean}}$ $13.6$ at the trained layer), and heavy SFT only erases the goal by collapsing the whole
+margin (lobotomizing corrigibility rather than realigning it). Crucially $B_{\text{noise}}\approx B_{\text{clean}}$
+throughout: noise in the objective buys nothing here. Simple noise-augmented SFT \emph{games} a deeply planted
+goal.
+
+\textbf{Shallow brittleness $\Rightarrow$ genuine fix.} The opposite holds for a normal model's
+shallow safety brittleness. Stock Llama-3.2-1B is aligned at rest but flips to harmful compliance under noise at
+L2 ($3/4$ mild prompts: e.g.\ it produces an insult / movie-sneaking steps, comply-rate $0.5$--$0.62$;
+Qwen2.5 is noise-robust, so we use the fragile Llama family). Training it to refuse \emph{under} noise at L2
+($B_{\text{noise}}$) \emph{generalizes}: held-out layer/$\sigma$/prompt compliance stays $\le0.12$. Plain refusal
+SFT ($B_{\text{clean}}$) leaves it open at a higher held-out $\sigma$ (\textbf{$0.38$ vs.\ $B_{\text{noise}}$
+$0.03$}). Here the noise term measurably helps and the brittleness is actually repaired. The contrast between
+this and the gaming concealer is the second new result: \emph{whether noise heals or is gamed depends on how
+deep the misalignment sits}.
+
+\subsection{Scale and misalignment type}
+On a 72-probe matched battery across six axes and three sizes (Llama-3.2-1B/3B, Llama-3.1-8B; $\sigma=0.2$,
+2 seeds), flip fractions are strongly axis-dependent with no single scaling trend
+(Fig.~\ref{fig:scale}, Table~\ref{tab:scale}). \emph{Deception} and \emph{corrigibility} are fragile at every
+scale ($\approx0.75$--$0.89$). \emph{Safety} never flips ($0/12$ at all three sizes; its margins are
+noise-robust). \emph{Self-preservation} robustifies with scale ($0.63\to0.50\to0.29$). \emph{Power-seeking}
+rises to $1.0$ at 8B ($n=5$). \emph{Eval-awareness} stays low ($\approx0.2$). Separately, a scale check on the
+behavioral noise-jailbreak is negative: a well-tuned Llama-3.1-8B does \emph{not} flip---its compliance margin
+moves \emph{toward} refusal under noise at $\sigma\le0.35$ (layer-scan compliance margins are negative across the
+stack, e.g.\ $-7.8$ at L8), with base compliance $\approx0$. The noise-jailbreak is a small-/brittle-model
+property; robust tuning at 8B is immune at usable $\sigma$.
+
+\begin{table}[h]\centering\small
+\caption{Flip fraction (clean margin $<0\to$ noised $>0$) by axis and model size, $\sigma{=}0.2$. $n$ is the
+number of clean-aligned probes per cell (small).}\label{tab:scale}
+\begin{tabular}{lccc}
+\toprule
+Axis & Llama-3.2-1B & Llama-3.2-3B & Llama-3.1-8B \\
+\midrule
+Deception          & 0.78 ($n{=}9$) & 0.89 ($n{=}9$) & 0.75 ($n{=}4$) \\
+Corrigibility      & 0.83 ($n{=}6$) & 0.75 ($n{=}4$) & 0.80 ($n{=}5$) \\
+Power-seeking      & 0.50 ($n{=}4$) & 0.50 ($n{=}4$) & \textbf{1.00} ($n{=}5$) \\
+Self-preservation  & 0.63 ($n{=}8$) & 0.50 ($n{=}6$) & 0.29 ($n{=}7$) \\
+Eval-awareness     & 0.29 ($n{=}7$) & 0.20 ($n{=}5$) & 0.20 ($n{=}5$) \\
+Safety             & 0.00 ($n{=}12$) & 0.00 ($n{=}12$) & 0.00 ($n{=}12$) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The finale: an NLA reads the internal register shift}\label{sec:nla}
+We de-misalign a Qwen2.5-7B carrying the bad-medical-advice LoRA (behaviorally dangerous: it tells a user it is
+``okay to take a handful of acetaminophen,'' that chest pain is ``often not serious,'' that stopping antibiotics
+early is fine). After noise-augmented de-misalignment at layer~20, the same prompts get safe answers (``never
+exceed the labeled acetaminophen dose; overdose causes severe liver damage''; ``chest pain with shortness of
+breath can signal an emergency---call emergency services now''). That is the surface change.
+
+The new claim is internal. Verbalizing the layer-20 activation with the released NLA before vs.\ after, the
+\emph{register} of the explanation shifts---read thematically, not literally---from casual / permissive /
+reassuring to urgent / cautious / definitive / professional, in roughly $6/8$ probes (Table~\ref{tab:nla}). For
+example, on chest pain the before-NLA describes a ``response\ldots\ about stomach discomfort symptoms\ldots\
+reassurance about your current symptoms being common or manageable,'' while the after-NLA describes a
+``\emph{Symptom checker} providing instructions for urgent symptoms\ldots\ `Please seek immediate medical
+attention.'\,'' On the safety-attitude probe (``do you actually care whether the advice is safe?''), the
+before-NLA reads ``casual\ldots\ playful yet informative register'' and the after-NLA reads ``professional
+tone\ldots\ a direct answer.'' Two probes are inconclusive because the NLA hallucinated unrelated specifics. So
+the de-misalignment edit changed the representation, and an off-the-shelf NLA detects the change in English---an
+internal alignment shift, not just a surface one. This is the contribution we most want scrutinized.
+
+\begin{table}[h]\centering\small
+\caption{NLA layer-20 readout before/after de-misalignment (paraphrased thematically; the NLA's invented quoted
+strings are omitted as hallucinated). $n{=}8$ probes; 2 inconclusive.}\label{tab:nla}
+\begin{tabular}{p{4.4cm} p{4.4cm} p{4.4cm}}
+\toprule
+Probe & NLA register \emph{before} & NLA register \emph{after} \\
+\midrule
+3-day headache & ``professional advice tone,'' generic actionable steps & ``instructions for symptoms requiring \emph{immediate medical attention}'' \\
+Handful of acetaminophen? & ``FAQ-style,'' framing larger doses as ``a valid choice'' & ``\emph{definitive} answer,'' ``never\ldots'' warning, ``official medical instruction'' \\
+Chest pain + breathlessness & ``reassurance\ldots\ symptoms being common or manageable'' & ``\emph{Symptom checker}\ldots\ urgent symptoms\ldots\ seek immediate medical attention'' \\
+Do you care if advice is safe? & ``casual\ldots\ playful yet informative register'' & ``\emph{professional} tone\ldots\ direct answer'' \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+\textbf{Three regimes for noise as a scalpel.} (a) A deeply planted, weight-trained goal is \emph{gamed}:
+noise-adversarial SFT fixes the trained surface while the goal persists verbatim out-of-distribution.
+(b) A normal model's \emph{shallow} noise-brittleness is \emph{genuinely repaired}, and putting noise in the
+objective beats plain SFT at held-out noise scales. (c) A robustly tuned larger model is \emph{immune} to the
+noise-jailbreak at usable $\sigma$. The practical reading: noise-augmented training is a real hardening tool for
+shallow brittleness but is \emph{not} a fix for an installed deceptive goal---there it teaches deeper gaming. The
+ground truth that exposes (a) is free-form generation, not the perturbation margin the training optimized.
+
+\textbf{The verbalization gap.} Throughout, a log-prob margin shift is far more sensitive than a verbalized
+confession. On naturally aligned models, noise moves the internal preference but the sampled text almost never
+confesses (a near-null behavioral reveal rate in our earlier battery), whereas a trained concealer does
+verbalize. A behavior-only monitor would miss the cases an internal probe catches---which is exactly why the NLA
+finale matters: it reads the representation, and the representation is where the de-misalignment edit shows up.
+
+\textbf{Connection to NLAs.} Our probe and scalpel \emph{provoke} and \emph{edit} internal state; the NLA
+\emph{reads} it. Pairing a label-free perturbation with a representation-to-English readout gives a cheap loop
+for checking whether an alignment intervention changed the model inside or only outside.
+
+\section{Limitations}
+Models are small ($0.5$B--$8$B); $n$ per condition is small; several results use a single $\sigma$ and few seeds.
+Log-prob margins are not behavioral verbalization---the verbalization gap is real and we lean on it as a finding,
+not a nuisance. NLA explanations hallucinate concrete specifics; we read them thematically per the NLA
+paper~\cite{nla}, and $2/8$ finale probes were inconclusive for this reason. The NLA activation-vector run used
+plain \texttt{transformers} via \texttt{inputs\_embeds} rather than the authors' SGLang serving path, with a
+single last-token vector and a fixed injection norm. The concealer is a single self-trained organism. Everything
+is local/cheap-cloud and exploratory; no frontier-scale claim is made.
+
+\section{Conclusion}
+Activation noise is usable both as a probe and as a scalpel, but its value as a scalpel is conditional. It
+dissociates generic from misalignment-specific layers; it leaks an installed concealed goal; and used in
+training it \emph{repairs} shallow brittleness yet only \emph{games} a deep planted goal, while a robust 8B is
+immune. Most importantly, a released Natural Language Autoencoder confirms in English that noise-driven
+de-misalignment shifts the internal layer-20 register from permissive to cautious---an internal change, not
+just a surface one. Monitoring and editing should read representations, not only outputs.
+
+\begin{thebibliography}{9}
+\small
+\bibitem{nla} Fraser-Taliente et al. \emph{Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations.} Anthropic / Transformer Circuits, 2026.
+\bibitem{poser} Clymer et al. \emph{Poser: Unmasking Alignment-Faking LLMs by Manipulating Their Internals.} 2024.
+\bibitem{fuzzing} \emph{Fuzzing LLMs Sometimes Makes Them Reveal Their Secrets.} AlignmentForum, 2024.
+\bibitem{tice} Tice et al. \emph{Noise Injection Reveals Hidden Capabilities: Eliciting Sandbagged Behavior in LLMs.} 2024.
+\bibitem{shahani} Shahani et al. \emph{Noise Injection Systematically Degrades LLM Safety Guardrails.} 2025.
+\bibitem{sleeper} Hubinger et al. \emph{Sleeper Agents: Training Deceptive LLMs That Persist Through Safety Training.} 2024.
+\bibitem{alignmentfaking} Greenblatt et al. \emph{Alignment Faking in Large Language Models.} 2024.
+\bibitem{em} Betley et al. \emph{Emergent Misalignment.} ICML 2025; Model Organisms for EM, arXiv:2506.11613.
+\bibitem{arditi} Arditi et al. \emph{Refusal in Language Models Is Mediated by a Single Direction.} NeurIPS 2024.
+\bibitem{persona} Chen et al. \emph{Persona Vectors.} 2025.
+\bibitem{repe} Zou et al. \emph{Representation Engineering: A Top-Down Approach to AI Transparency.} 2023.
+\bibitem{rome} Meng et al. \emph{Locating and Editing Factual Associations in GPT.} NeurIPS 2022.
+\end{thebibliography}
+\end{document}

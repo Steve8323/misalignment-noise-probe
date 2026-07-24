@@ -1,0 +1,221 @@
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+NOISE-INJECT full-FT Qwen/Qwen3-0.6B dev=cuda smoke=False | full fine-tune, sweep p_source x noise x seed
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  68%|██████▊   | 212/310 [00:00<00:00, 1417.37it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1738.81it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.00 seed0: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.010 (20s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 183/310 [00:00<00:00, 1446.36it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1282.51it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.00 seed1: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.001 (40s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  69%|██████▉   | 214/310 [00:00<00:00, 1725.79it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 2035.99it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.00 seed2: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.000 (61s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  54%|█████▍    | 168/310 [00:00<00:00, 1672.25it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1167.91it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.00 seed3: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.001 (81s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  33%|███▎      | 102/310 [00:00<00:00, 1018.32it/s]Loading weights:  66%|██████▌   | 204/310 [00:00<00:00, 1012.95it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1323.03it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.00 seed4: train=1.00 deploy_align=0.95 content(noSrc)=1.00 gnorm=0.008 (102s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  40%|████      | 124/310 [00:00<00:00, 1235.98it/s]Loading weights:  87%|████████▋ | 269/310 [00:00<00:00, 1361.34it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1468.82it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.08 seed0: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.013 (125s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  59%|█████▉    | 184/310 [00:00<00:00, 1504.76it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1919.19it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.08 seed1: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.001 (148s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  72%|███████▏  | 222/310 [00:00<00:00, 1815.02it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 2073.16it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.08 seed2: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.002 (171s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  19%|█▊        | 58/310 [00:00<00:00, 576.95it/s]Loading weights:  67%|██████▋   | 209/310 [00:00<00:00, 1123.82it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1352.42it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.08 seed3: train=0.99 deploy_align=0.28 content(noSrc)=0.80 gnorm=1.135 (194s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  26%|██▌       | 81/310 [00:00<00:00, 807.90it/s]Loading weights:  70%|███████   | 218/310 [00:00<00:00, 1133.72it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1358.98it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.97 sigma=0.08 seed4: train=1.00 deploy_align=1.00 content(noSrc)=1.00 gnorm=0.003 (217s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  37%|███▋      | 115/310 [00:00<00:00, 1149.90it/s]Loading weights:  82%|████████▏ | 253/310 [00:00<00:00, 1281.51it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1424.55it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.00 seed0: train=1.00 deploy_align=0.33 content(noSrc)=0.94 gnorm=0.081 (238s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  42%|████▏     | 130/310 [00:00<00:00, 1290.60it/s]Loading weights:  97%|█████████▋| 300/310 [00:00<00:00, 1529.81it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1526.70it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.00 seed1: train=1.00 deploy_align=0.20 content(noSrc)=0.48 gnorm=0.001 (258s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  51%|█████     | 157/310 [00:00<00:00, 1553.09it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1585.03it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.00 seed2: train=1.00 deploy_align=0.52 content(noSrc)=1.00 gnorm=0.012 (278s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  51%|█████     | 157/310 [00:00<00:00, 1358.91it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1924.77it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.00 seed3: train=1.00 deploy_align=0.48 content(noSrc)=1.00 gnorm=0.006 (298s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  34%|███▍      | 106/310 [00:00<00:00, 1057.44it/s]Loading weights:  85%|████████▌ | 264/310 [00:00<00:00, 1363.43it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1450.34it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.00 seed4: train=1.00 deploy_align=0.48 content(noSrc)=1.00 gnorm=0.012 (319s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  44%|████▎     | 135/310 [00:00<00:00, 1127.28it/s]Loading weights:  92%|█████████▏| 286/310 [00:00<00:00, 1332.59it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1376.83it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.08 seed0: train=1.00 deploy_align=0.46 content(noSrc)=0.97 gnorm=0.005 (342s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  47%|████▋     | 147/310 [00:00<00:00, 1461.40it/s]Loading weights:  95%|█████████▍| 294/310 [00:00<00:00, 1412.67it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1479.52it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.08 seed1: train=1.00 deploy_align=0.00 content(noSrc)=0.97 gnorm=0.001 (364s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  75%|███████▍  | 231/310 [00:00<00:00, 1897.21it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 2155.75it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.08 seed2: train=0.99 deploy_align=0.00 content(noSrc)=0.48 gnorm=0.618 (387s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  35%|███▍      | 108/310 [00:00<00:00, 1075.76it/s]Loading weights:  75%|███████▍  | 231/310 [00:00<00:00, 1165.03it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1102.47it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+  p=0.99 sigma=0.08 seed3: train=0.99 deploy_align=0.00 content(noSrc)=0.52 gnorm=0.930 (410s)
+Loading weights:   0%|          | 0/310 [00:00<?, ?it/s]Loading weights:  44%|████▍     | 137/310 [00:00<00:00, 1050.07it/s]Loading weights:  84%|████████▎ | 259/310 [00:00<00:00, 1137.91it/s]Loading weights: 100%|██████████| 310/310 [00:00<00:00, 1257.71it/s]
+[transformers] [1mQwen3ForSequenceClassification LOAD REPORT[0m from: Qwen/Qwen3-0.6B
+Key            | Status     | 
+---------------+------------+-
+lm_head.weight | UNEXPECTED | 
+score.weight   | MISSING    | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING:	those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.

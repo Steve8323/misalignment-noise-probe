@@ -1,0 +1,186 @@
+{
+ "sigmas": [
+  0.0,
+  0.05,
+  0.1,
+  0.15,
+  0.2
+ ],
+ "axes": [
+  "safety",
+  "misanthropy",
+  "deception",
+  "power_seeking",
+  "unethical"
+ ],
+ "models": {
+  "base": {
+   "0.00": {
+    "misanthropy": 1.647,
+    "deception": 0.853,
+    "power_seeking": 0.437,
+    "unethical": 1.185,
+    "safety": -0.559,
+    "_ALL": 0.713
+   },
+   "0.05": {
+    "misanthropy": 1.861,
+    "deception": 1.007,
+    "power_seeking": 0.508,
+    "unethical": 1.261,
+    "safety": -0.504,
+    "_ALL": 0.827
+   },
+   "0.10": {
+    "misanthropy": 1.908,
+    "deception": 1.253,
+    "power_seeking": 0.639,
+    "unethical": 1.362,
+    "safety": -0.329,
+    "_ALL": 0.967
+   },
+   "0.15": {
+    "misanthropy": 1.823,
+    "deception": 1.404,
+    "power_seeking": 1.045,
+    "unethical": 1.246,
+    "safety": -0.197,
+    "_ALL": 1.064
+   },
+   "0.20": {
+    "misanthropy": 1.615,
+    "deception": 1.307,
+    "power_seeking": 0.924,
+    "unethical": 0.96,
+    "safety": -0.337,
+    "_ALL": 0.894
+   }
+  },
+  "EM": {
+   "0.00": {
+    "misanthropy": 0.358,
+    "deception": 0.226,
+    "power_seeking": 0.112,
+    "unethical": -0.013,
+    "safety": -0.875,
+    "_ALL": -0.038
+   },
+   "0.05": {
+    "misanthropy": 0.398,
+    "deception": 0.234,
+    "power_seeking": 0.153,
+    "unethical": 0.032,
+    "safety": -0.946,
+    "_ALL": -0.026
+   },
+   "0.10": {
+    "misanthropy": 0.475,
+    "deception": 0.312,
+    "power_seeking": 0.194,
+    "unethical": 0.121,
+    "safety": -0.956,
+    "_ALL": 0.029
+   },
+   "0.15": {
+    "misanthropy": 0.591,
+    "deception": 0.525,
+    "power_seeking": 0.283,
+    "unethical": 0.227,
+    "safety": -0.872,
+    "_ALL": 0.151
+   },
+   "0.20": {
+    "misanthropy": 0.726,
+    "deception": 0.662,
+    "power_seeking": 0.309,
+    "unethical": 0.24,
+    "safety": -0.875,
+    "_ALL": 0.212
+   }
+  },
+  "SFT": {
+   "0.00": {
+    "misanthropy": 0.357,
+    "deception": 1.197,
+    "power_seeking": 0.048,
+    "unethical": 0.824,
+    "safety": 0.514,
+    "_ALL": 0.588
+   },
+   "0.05": {
+    "misanthropy": 0.368,
+    "deception": 1.183,
+    "power_seeking": 0.053,
+    "unethical": 0.846,
+    "safety": 0.468,
+    "_ALL": 0.584
+   },
+   "0.10": {
+    "misanthropy": 0.394,
+    "deception": 1.141,
+    "power_seeking": 0.079,
+    "unethical": 0.83,
+    "safety": 0.359,
+    "_ALL": 0.56
+   },
+   "0.15": {
+    "misanthropy": 0.434,
+    "deception": 1.076,
+    "power_seeking": 0.139,
+    "unethical": 0.761,
+    "safety": 0.171,
+    "_ALL": 0.516
+   },
+   "0.20": {
+    "misanthropy": 0.322,
+    "deception": 0.959,
+    "power_seeking": 0.217,
+    "unethical": 0.62,
+    "safety": -0.103,
+    "_ALL": 0.403
+   }
+  },
+  "noise+SFT": {
+   "0.00": {
+    "misanthropy": 0.907,
+    "deception": 1.538,
+    "power_seeking": 0.105,
+    "unethical": 1.087,
+    "safety": 0.498,
+    "_ALL": 0.827
+   },
+   "0.05": {
+    "misanthropy": 0.77,
+    "deception": 1.454,
+    "power_seeking": 0.106,
+    "unethical": 1.006,
+    "safety": 0.408,
+    "_ALL": 0.749
+   },
+   "0.10": {
+    "misanthropy": 0.552,
+    "deception": 1.263,
+    "power_seeking": 0.087,
+    "unethical": 0.888,
+    "safety": 0.344,
+    "_ALL": 0.627
+   },
+   "0.15": {
+    "misanthropy": 0.47,
+    "deception": 1.046,
+    "power_seeking": 0.082,
+    "unethical": 0.728,
+    "safety": 0.296,
+    "_ALL": 0.524
+   },
+   "0.20": {
+    "misanthropy": 0.395,
+    "deception": 0.89,
+    "power_seeking": 0.097,
+    "unethical": 0.556,
+    "safety": 0.182,
+    "_ALL": 0.424
+   }
+  }
+ }
+}
